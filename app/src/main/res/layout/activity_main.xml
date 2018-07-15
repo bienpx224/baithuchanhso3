@@ -47,6 +47,7 @@
                 android:layout_height="wrap_content" />
         </RadioGroup>
         <Button
+            android:onClick="addContact"
             android:textStyle="bold"
             android:id="@+id/btn_add"
             android:paddingLeft="30dp"
