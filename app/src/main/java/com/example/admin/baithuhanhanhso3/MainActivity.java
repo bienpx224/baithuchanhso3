@@ -1,9 +1,17 @@
 package com.example.admin.baithuhanhanhso3;
 
+import android.Manifest;
+import android.app.Dialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -35,6 +43,13 @@ public class MainActivity extends AppCompatActivity {
         arrayContact = new ArrayList<>();
         adapter = new ContactAdapter(this, R.layout.item_contact_listview,  arrayContact);
         lvContact.setAdapter(adapter);
+        checkAndRequestPermissions();
+        lvContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                showDialogConfirm(i);
+            }
+        });
     }
     public void setWiget(){
         edtName = (EditText) findViewById(R.id.edt_name);
@@ -63,6 +78,60 @@ public class MainActivity extends AppCompatActivity {
             }
             adapter.notifyDataSetChanged();
 
+        }
+    }
+
+    public void showDialogConfirm(final int position){
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.custom_dialog_layout);
+        Button btnCall = (Button) dialog.findViewById(R.id.btn_call);
+        Button btnSendMessage = (Button) dialog.findViewById(R.id.btn_send_message);
+
+        btnCall.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                intentCall(position);
+            }
+        });
+
+        btnSendMessage.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                intentSendMsg(position);
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void intentSendMsg(int position) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("sms:"+arrayContact.get(position).getmNumber()));
+        startActivity(intent);
+    }
+
+    private void intentCall(int position) {
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_CALL);
+        intent.setData(Uri.parse("tel: "+arrayContact.get(position).getmNumber()));
+        startActivity(intent);
+    }
+
+    private void checkAndRequestPermissions(){
+        String[] permissions = new String[]{
+                Manifest.permission.CALL_PHONE,
+                Manifest.permission.SEND_SMS
+        };
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        for( String permission: permissions){
+            if(ContextCompat.checkSelfPermission(this,permission) != PackageManager.PERMISSION_GRANTED){
+                listPermissionsNeeded.add(permission);
+            }
+        }
+        if(!listPermissionsNeeded.isEmpty()){
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), 1);
         }
     }
 }

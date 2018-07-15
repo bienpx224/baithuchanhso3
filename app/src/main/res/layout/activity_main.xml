@@ -18,6 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <EditText
+            android:inputType="number"
+            android:maxLength="12"
             android:id="@+id/edt_number"
             android:layout_marginTop="10dp"
             android:hint="@string/Input_phone"
